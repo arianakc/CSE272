@@ -131,7 +131,7 @@ class SearchBuilder(object):
                            "DocID": doc.get(".U"),
                            "Rank": str(rank + 1),
                            "Score": str(hit.score),
-                           "RunID": self.similarity}
+                           "RunID": self.similarity + "-mpprf-"+str(len(doc_counts))+"passes" if use_multipass_pseudo_relevance_feedback else self.similarity}
             trec_results.append(trec_result)
         return trec_results
 
