@@ -1,0 +1,9 @@
+lucene-index
+pylucene-8.8.1
+.idea
+data
+.DS_Store
+__pycache__
+trec_eval
+feedback-lucene-index1
+traindata.json
