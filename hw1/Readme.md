@@ -5,6 +5,7 @@
 #### Set up the environment
 - Install the python3
 - Install the pylucene based on the instructions from https://lucene.apache.org/pylucene/
+- Download and Install trec_eval: https://github.com/usnistgov/trec_eval
 - Install other required python package
     - nltk
     - tqdm
