@@ -9,11 +9,6 @@
 - Install other required python package
     - nltk
     - tqdm
-    - numpy
-    - spacy_sentence_bert
-    - scipy
-    - gensim
-    - spacy_sentence_bert
     
 #### Parameters for main
 ```bash
@@ -44,11 +39,12 @@ optional arguments:
 
 #### The commands to reproduce the best results file:
 ```bash
-python3 main.py --approach BM25 --output_file bm25pfb2pass-results.trec --use_pfb
+python3 main.py --task build_index --documents_file "data/ohsumed.88-91" --feed_back_doc_file "data/ohsumed.87"
+python3 main.py --task search_index --approach BM25 --output_file bm25pfb2pass-results.trec --use_pfb
 ```
 #### The commands to eval the best results file using trec_eval:
 ```bash
- trec_eval -c -m recall.50 -m P.50 -m map data/qrels.ohsu.88-91.trec bm25pfb2pass-results.trec
+trec_eval -c -m recall.50 -m P.50 -m map data/qrels.ohsu.88-91.trec bm25pfb2pass-results.trec
 ```
 qrels.ohsu.88-91.trec  is the converted trec format gold answer file using data processor.
 

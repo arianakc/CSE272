@@ -1,6 +1,5 @@
 # Code written by Changmao Li For CSE 272 hw1
 import lucene
-import os
 from src.index_builder import IndexBuilder
 from src.data_processor import read_ohsumed, read_queries, output_results_to_file, read_qrels_to_trec
 from src.index_searcher import SearchBuilder

@@ -1,8 +1,6 @@
 # Code Written by Changmao Li for CSE272 hw1
 # Date: April 16
 
-import copy
-
 OHSU_SEQID = ".I"
 OHSU_DOCID = ".U"
 OHSU_SUBJECT = ".S"
