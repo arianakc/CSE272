@@ -47,7 +47,7 @@ python3 main.py --approach BM25 --output_file bm25pfb2pass-results.trec --use_pf
 ```
 #### The commands to eval the best results file using trec_eval:
 ```bash
- trec_eval -c -m recall -m recall.50 -m P.50 -m map data/qrels.ohsu.88-91.trec data/bm25pfd1pass-results.trec
+ trec_eval -c -m recall.50 -m P.50 -m map data/qrels.ohsu.88-91.trec data/bm25pfd1pass-results.trec
 ```
 qrels.ohsu.88-91.trec  is the converted trec format gold answer file using data processor.
 
