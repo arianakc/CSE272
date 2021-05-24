@@ -6,7 +6,6 @@ from metrics import precision_recall_at_k, get_conversion_rate, get_ndcg
 from utils import output_ranking
 import argparse
 
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--train_file_path", default="data/train.csv", help="training file path")
@@ -15,12 +14,10 @@ def main():
     parser.add_argument("--output_ranking_file", default="ranking", help="output ranking for test")
     options = {"BaselineOnly": BaselineOnly, "SVD": SVD, "SlopeOne": SlopeOne, "NMF": NMF, "CoClustering": CoClustering}
     args = parser.parse_args()
-    train_file_path = args.train_file_path
-    test_file_path = args.test_file_path
     reader = Reader(line_format='user item rating timestamp', sep='\t')
-    algo = options[args.approach]()
-    train_data = Dataset.load_from_file(train_file_path, reader=reader)
-    test_data = Dataset.load_from_file(test_file_path, reader=reader)
+    algo = options[args.approach](verbose=True)
+    train_data = Dataset.load_from_file(args.train_file_path, reader=reader)
+    test_data = Dataset.load_from_file(args.test_file_path, reader=reader)
     train_set = train_data.build_full_trainset()
     test_set = test_data.build_full_trainset().build_testset()
     print("training....")

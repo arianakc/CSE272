@@ -45,8 +45,8 @@ def convert_json_to_user_item_rating_csv(data, csv_file):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_file_path", default="data/reviews_Movies_and_TV_5.json", help="data file path")
-    parser.add_argument("--train_file_path", default="data/train.csv", help="testing file path")
-    parser.add_argument("--test_file_path", default="data/train.csv", help="testing file path")
+    parser.add_argument("--train_file_path", default="data/train.csv", help="training file path")
+    parser.add_argument("--test_file_path", default="data/test.csv", help="testing file path")
     args = parser.parse_args()
     dataset = read_json(args.data_file_path)
     train_data, test_data = split_data(dataset)
