@@ -71,6 +71,12 @@ def get_conversion_rate(predictions, k=10, threshold=0):
     return sum([1 if precision > 0 else 0 for precision in precisions.values()])/len(precisions.values())
 
 
+def f_measure(precisions, recalls):
+    precision = sum(prec for prec in precisions.values()) / len(precisions)
+    recall = sum(rec for rec in recalls.values()) / len(recalls)
+    return 2*precision*recall / (precision + recall)
+
+
 def get_ndcg(predictions, k_highest_scores=None):
     """
     Calculates the ndcg (normalized discounted cumulative gain) from surprise predictions, using sklearn.metrics.ndcg_score and scipy.sparse
