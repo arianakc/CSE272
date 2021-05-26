@@ -46,7 +46,7 @@ python3 recommender.py --train_file_path data/train.csv --test_file_path data/te
 python3 recommender.py --train_file_path data/train.csv --test_file_path data/test.csv --approach SVD --output_ranking_file ranking
 ```
 
-
-
+### Notes
+ranking_*.out are the ranking output files in "user item ranking" format.
 
 
