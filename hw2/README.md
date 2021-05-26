@@ -37,9 +37,13 @@ optional arguments:
   --output_ranking_file OUTPUT_RANKING_FILE
                         output ranking for test
 ```
-#### Example Usage
+#### Example Usage: Run Baseline
 ```bash
 python3 recommender.py --train_file_path data/train.csv --test_file_path data/test.csv --approach Baseline --output_ranking_file ranking
+```
+#### Example Usage: Run SVD
+```bash
+python3 recommender.py --train_file_path data/train.csv --test_file_path data/test.csv --approach SVD --output_ranking_file ranking
 ```
 
 
