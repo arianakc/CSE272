@@ -11,10 +11,14 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--train_file_path", default="data/train.csv", help="training file path")
     parser.add_argument("--test_file_path", default="data/test.csv", help="testing file path")
-    parser.add_argument("--approach", default="SVD", help="BaselineOnly | SVD | SlopeOne | NMF | CoClustering")
+    parser.add_argument("--approach", default="SVD", help="Baseline | SVD | SlopeOne | NMF | CoClustering")
     parser.add_argument("--output_ranking_file", default="ranking", help="output ranking for test")
     bsl_options = {'method': 'sgd', 'n_epochs': 20, 'reg_u': 100, 'reg_i': 50}
-    options = {"Baseline": BaselineOnly(bsl_options, verbose=True), "SVD": SVD(verbose=True, n_factors=20, n_epochs=3), "SlopeOne": SlopeOne(), "NMF": NMF(), "CoClustering": CoClustering()}
+    options = {"Baseline": BaselineOnly(bsl_options, verbose=True),
+               "SVD": SVD(verbose=True, n_factors=20, n_epochs=3),
+               "SlopeOne": SlopeOne(),
+               "NMF": NMF(),
+               "CoClustering": CoClustering()}
     args = parser.parse_args()
     reader = Reader(line_format='user item rating timestamp', sep='\t')
     algo = options[args.approach]

@@ -33,13 +33,13 @@ optional arguments:
                         training file path
   --test_file_path TEST_FILE_PATH
                         testing file path
-  --approach APPROACH   BaselineOnly | SVD | SlopeOne | NMF | CoClustering
+  --approach APPROACH   Baseline | SVD | SlopeOne | NMF | CoClustering
   --output_ranking_file OUTPUT_RANKING_FILE
                         output ranking for test
 ```
 #### Example Usage
 ```bash
-python3 recommender.py --train_file_path data/train.csv --test_file_path data/test.csv --approach BaselineOnly --output_ranking_file ranking
+python3 recommender.py --train_file_path data/train.csv --test_file_path data/test.csv --approach Baseline --output_ranking_file ranking
 ```
 
 
