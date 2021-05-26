@@ -1,4 +1,4 @@
-from surprise import BaselineOnly, SVD, SlopeOne, NMF, CoClustering
+from surprise import BaselineOnly, SVD, SlopeOne, NMF, CoClustering, SVDpp
 from surprise import Dataset
 from surprise import Reader
 from surprise import accuracy
@@ -13,7 +13,8 @@ def main():
     parser.add_argument("--test_file_path", default="data/test.csv", help="testing file path")
     parser.add_argument("--approach", default="SVD", help="BaselineOnly | SVD | SlopeOne | NMF | CoClustering")
     parser.add_argument("--output_ranking_file", default="ranking", help="output ranking for test")
-    options = {"BaselineOnly": BaselineOnly(), "SVD": SVD(verbose=True, n_epochs=30), "SlopeOne": SlopeOne(), "NMF": NMF(), "CoClustering": CoClustering()}
+    bsl_options = {'method': 'sgd', 'n_epochs': 20, 'reg_u': 100, 'reg_i': 50}
+    options = {"Baseline": BaselineOnly(bsl_options, verbose=True), "SVD": SVD(verbose=True, n_factors=20, n_epochs=3), "SlopeOne": SlopeOne(), "NMF": NMF(), "CoClustering": CoClustering()}
     args = parser.parse_args()
     reader = Reader(line_format='user item rating timestamp', sep='\t')
     algo = options[args.approach]
