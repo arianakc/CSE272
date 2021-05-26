@@ -16,7 +16,7 @@ def main():
     options = {"BaselineOnly": BaselineOnly, "SVD": SVD, "SlopeOne": SlopeOne, "NMF": NMF, "CoClustering": CoClustering}
     args = parser.parse_args()
     reader = Reader(line_format='user item rating timestamp', sep='\t')
-    algo = options[args.approach](verbose=True)
+    algo = options[args.approach]()
     train_data = Dataset.load_from_file(args.train_file_path, reader=reader)
     test_data = Dataset.load_from_file(args.test_file_path, reader=reader)
     train_set = train_data.build_full_trainset()
