@@ -13,10 +13,10 @@ def main():
     parser.add_argument("--test_file_path", default="data/test.csv", help="testing file path")
     parser.add_argument("--approach", default="SVD", help="BaselineOnly | SVD | SlopeOne | NMF | CoClustering")
     parser.add_argument("--output_ranking_file", default="ranking", help="output ranking for test")
-    options = {"BaselineOnly": BaselineOnly, "SVD": SVD, "SlopeOne": SlopeOne, "NMF": NMF, "CoClustering": CoClustering}
+    options = {"BaselineOnly": BaselineOnly(), "SVD": SVD(verbose=True, n_epochs=30), "SlopeOne": SlopeOne(), "NMF": NMF(), "CoClustering": CoClustering()}
     args = parser.parse_args()
     reader = Reader(line_format='user item rating timestamp', sep='\t')
-    algo = options[args.approach]()
+    algo = options[args.approach]
     train_data = Dataset.load_from_file(args.train_file_path, reader=reader)
     test_data = Dataset.load_from_file(args.test_file_path, reader=reader)
     train_set = train_data.build_full_trainset()
