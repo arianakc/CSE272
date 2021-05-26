@@ -1,4 +1,4 @@
-from surprise import BaselineOnly, SVD, SlopeOne, NMF, CoClustering, SVDpp
+from surprise import BaselineOnly, SVD, SlopeOne, NMF, CoClustering
 from surprise import Dataset
 from surprise import Reader
 from surprise import accuracy
