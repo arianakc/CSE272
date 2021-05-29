@@ -89,6 +89,51 @@ def _iter_train_pairs(model, dataset, train_pairs, qrels):
             yield qid, neg_id, query_tok, model.tokenize(neg_doc)
 
 
+def iter_train_pairs_with_labels(model, dataset, train_pairs, qrels, batch_size):
+    batch = {'query_id': [], 'doc_id': [], 'query_tok': [], 'doc_tok': [], 'labels': [], 'extra_labels': []}
+    for qid, did, query_tok, doc_tok, labels,  extra_labels in _iter_train_pairs_with_labels(model, dataset, train_pairs, qrels):
+        batch['query_id'].append(qid)
+        batch['doc_id'].append(did)
+        batch['query_tok'].append(query_tok)
+        batch['doc_tok'].append(doc_tok)
+        batch['labels'].append(labels)
+        batch['extra_labels'].append(extra_labels)
+        if len(batch['query_id']) // 2 == batch_size:
+            yield _pack_n_ship_with_labels(batch)
+            batch = {'query_id': [], 'doc_id': [], 'query_tok': [], 'doc_tok': [], 'labels': [], 'extra_labels': []}
+
+
+def _iter_train_pairs_with_labels(model, dataset, train_pairs, qrels):
+    ds_queries, ds_docs = dataset
+    while True:
+        qids = list(train_pairs.keys())
+        random.shuffle(qids)
+        for qid in qids:
+            pos_ids = [did for did in train_pairs[qid] if qrels.get(qid, {}).get(did, 0) > 0]
+            if len(pos_ids) == 0:
+                tqdm.write("no positive labels for query %s " % qid)
+                continue
+            pos_id = random.choice(pos_ids)
+            pos_ids_lookup = set(pos_ids)
+            pos_ids = set(pos_ids)
+            neg_ids = [did for did in train_pairs[qid] if did not in pos_ids_lookup]
+            if len(neg_ids) == 0:
+                tqdm.write("no negative labels for query %s " % qid)
+                continue
+            neg_id = random.choice(neg_ids)
+            query_tok = model.tokenize(ds_queries[qid])
+            pos_doc = ds_docs.get(pos_id)
+            neg_doc = ds_docs.get(neg_id)
+            if pos_doc is None:
+                tqdm.write(f'missing doc {pos_id}! Skipping')
+                continue
+            if neg_doc is None:
+                tqdm.write(f'missing doc {neg_id}! Skipping')
+                continue
+            yield qid, pos_id, query_tok, model.tokenize(pos_doc), model.tokenize("true"), 0
+            yield qid, neg_id, query_tok, model.tokenize(neg_doc), model.tokenize("false"), 1
+
+
 def iter_valid_records(model, dataset, run, batch_size):
     batch = {'query_id': [], 'doc_id': [], 'query_tok': [], 'doc_tok': []}
     for qid, did, query_tok, doc_tok in _iter_valid_records(model, dataset, run):
@@ -130,6 +175,20 @@ def _pack_n_ship(batch):
         'doc_mask': _mask(batch['doc_tok'], DLEN),
     }
 
+def _pack_n_ship_with_labels(batch):
+    QLEN = 20
+    MAX_DLEN = 800
+    DLEN = min(MAX_DLEN, max(len(b) for b in batch['doc_tok']))
+    return {
+        'query_id': batch['query_id'],
+        'doc_id': batch['doc_id'],
+        'query_tok': _pad_crop(batch['query_tok'], QLEN),
+        'doc_tok': _pad_crop(batch['doc_tok'], DLEN),
+        'query_mask': _mask(batch['query_tok'], QLEN),
+        'doc_mask': _mask(batch['doc_tok'], DLEN),
+        'labels': _pad_crop(batch['labels'], 1),
+        'extra_labels': torch.tensor(batch['extra_labels']).long().cuda()
+    }
 
 def _pad_crop(items, l):
     result = []
@@ -139,7 +198,7 @@ def _pad_crop(items, l):
         if len(item) > l:
             item = item[:l]
         result.append(item)
-    return torch.tensor(result).long().cuda()
+    return torch.tensor(result).long()
 
 
 def _mask(items, l):
@@ -152,4 +211,4 @@ def _mask(items, l):
         if len(item) >= l:
             mask = [1. for _ in item[:l]]
         result.append(mask)
-    return torch.tensor(result).float().cuda()
+    return torch.tensor(result).float()

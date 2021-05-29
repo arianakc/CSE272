@@ -2,17 +2,16 @@ from pytools import memoize_method
 import torch
 import torch.nn.functional as F
 import pytorch_pretrained_bert
-from . import modeling_util
+import modeling_util
 
 
 class BertRanker(torch.nn.Module):
     def __init__(self):
         super().__init__()
-        self.BERT_MODEL = 'bert-base-uncased'
-        self.CHANNELS = 12 + 1 # from bert-base-uncased
-        self.BERT_SIZE = 768 # from bert-base-uncased
-        self.bert = CustomBertModel.from_pretrained(self.BERT_MODEL)
-        self.tokenizer = pytorch_pretrained_bert.BertTokenizer.from_pretrained(self.BERT_MODEL)
+        self.CHANNELS = 12 + 1
+        self.BERT_SIZE = 768
+        self.bert = CustomBertModel.from_pretrained("model")
+        self.tokenizer = pytorch_pretrained_bert.BertTokenizer.from_pretrained("model/vocab.txt")
 
     def forward(self, **inputs):
         raise NotImplementedError

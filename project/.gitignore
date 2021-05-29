@@ -1,1 +1,5 @@
 .idea
+data
+model
+__pycache__
+models

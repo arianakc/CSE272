@@ -5,13 +5,11 @@ import random
 import tempfile
 from tqdm import tqdm
 import torch
-import modeling
+import models
 import data
 import pytrec_eval
 from statistics import mean
 from collections import defaultdict
-
-
 
 SEED = 42
 LR = 0.001
@@ -28,12 +26,8 @@ torch.manual_seed(SEED)
 torch.cuda.manual_seed_all(SEED)
 random.seed(SEED)
 
-
 MODEL_MAP = {
-    'vanilla_bert': modeling.VanillaBertRanker,
-    'cedr_pacrr': modeling.CedrPacrrRanker,
-    'cedr_knrm': modeling.CedrKnrmRanker,
-    'cedr_drmm': modeling.CedrDrmmRanker
+    'vanilla_bert': models.VanillaBertRanker
 }
 
 
@@ -41,9 +35,9 @@ def main(model, dataset, train_pairs, qrels_train, valid_run, qrels_valid, model
     '''
         Runs the training loop, controlled by the constants above
         Args:
-            model(torch.nn.model or str): One of the models in modelling.py, 
+            model(torch.nn.model or str): One of the models in modelling.py,
             or one of the keys of MODEL_MAP.
-            dataset: A tuple containing two dictionaries, which contains the 
+            dataset: A tuple containing two dictionaries, which contains the
             text of documents and queries in both training and validation sets:
                 ({"q1" : "query text 1"}, {"d1" : "doct text 1"} )
             train_pairs: A dictionary containing query document mappings for the training set
@@ -57,8 +51,8 @@ def main(model, dataset, train_pairs, qrels_train, valid_run, qrels_valid, model
             qrels_valid: A dictionary  containing qrels
             model_out_dir: Location where to write the models. If None, a temporary directoy is used.
     '''
-    
-    if isinstance(model,str):
+
+    if isinstance(model, str):
         model = MODEL_MAP[model]().cuda()
     if model_out_dir is None:
         model_out_dir = tempfile.mkdtemp()
@@ -87,19 +81,18 @@ def main(model, dataset, train_pairs, qrels_train, valid_run, qrels_valid, model
         if top_valid_score is not None and epoch - top_valid_score_epoch > PATIENCE:
             print(f'no validation improvement since {top_valid_score_epoch}, early stopping', flush=True)
             break
-        
-    #load the final selected model for returning
+
+    # load the final selected model for returning
     if top_valid_score_epoch != epoch:
         model.load(os.path.join(model_out_dir, 'weights.p'))
     return (model, top_valid_score_epoch)
 
 
 def train_iteration(model, optimizer, dataset, train_pairs, qrels):
-    
     total = 0
     model.train()
     total_loss = 0.
-    with tqdm('training', total=BATCH_SIZE * BATCHES_PER_EPOCH, ncols=80, desc='train', leave=False) as pbar:
+    with tqdm('training', total=BATCH_SIZE * BATCHES_PER_EPOCH, ncols=80, desc='train') as pbar:
         for record in data.iter_train_pairs(model, dataset, train_pairs, qrels, GRAD_ACC_SIZE):
             scores = model(record['query_tok'],
                            record['query_mask'],
@@ -107,7 +100,7 @@ def train_iteration(model, optimizer, dataset, train_pairs, qrels):
                            record['doc_mask'])
             count = len(record['query_id']) // 2
             scores = scores.reshape(count, 2)
-            loss = torch.mean(1. - scores.softmax(dim=1)[:, 0]) # pariwse softmax
+            loss = torch.mean(1. - scores.softmax(dim=1)[:, 0])  # pariwse softmax
             loss.backward()
             total_loss += loss.item()
             total += count
@@ -131,7 +124,7 @@ def validate(model, dataset, run, valid_qrels, epoch):
 
 def run_model(model, dataset, run, desc='valid'):
     rerank_run = defaultdict(dict)
-    with torch.no_grad(), tqdm(total=sum(len(r) for r in run.values()), ncols=80, desc=desc, leave=False) as pbar:
+    with torch.no_grad(), tqdm(total=sum(len(r) for r in run.values()), ncols=80, desc=desc) as pbar:
         model.eval()
         for records in data.iter_valid_records(model, dataset, run, BATCH_SIZE):
             scores = model(records['query_tok'],
@@ -142,7 +135,7 @@ def run_model(model, dataset, run, desc='valid'):
                 rerank_run[qid][did] = score.item()
             pbar.update(len(records['query_id']))
     return rerank_run
-    
+
 
 def write_run(rerank_run, runf):
     '''
@@ -152,7 +145,8 @@ def write_run(rerank_run, runf):
         for qid in rerank_run:
             scores = list(sorted(rerank_run[qid].items(), key=lambda x: (x[1], x[0]), reverse=True))
             for i, (did, score) in enumerate(scores):
-                runfile.write(f'{qid} 0 {did} {i+1} {score} run\n')
+                runfile.write(f'{qid} 0 {did} {i + 1} {score} run\n')
+
 
 def main_cli():
     parser = argparse.ArgumentParser('CEDR model training and validation')
