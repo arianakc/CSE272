@@ -13,7 +13,7 @@ from collections import defaultdict
 
 SEED = 42
 LR = 0.001
-MBART_LR = 3e-5
+MT5_LR = 0.001
 MAX_EPOCH = 100
 BATCH_SIZE = 32
 BATCHES_PER_EPOCH = 64
@@ -27,7 +27,7 @@ torch.cuda.manual_seed_all(SEED)
 random.seed(SEED)
 
 MODEL_MAP = {
-    'vanilla_mbart': models.MBARTRanker
+    'vanilla_mt5': models.MT5ClassificationRanker
 }
 
 
@@ -58,13 +58,13 @@ def main(model, dataset, train_pairs, qrels_train, valid_run, qrels_valid, model
         model_out_dir = tempfile.mkdtemp()
 
     params = [(k, v) for k, v in model.named_parameters() if v.requires_grad]
-    non_mbart_params = {'params': [v for k, v in params if not k.startswith('mbart.')]}
-    mbart_params = {'params': [v for k, v in params if k.startswith('mbart.')], 'lr': MBART_LR}
-    optimizer = torch.optim.Adam([non_mbart_params, mbart_params], lr=LR)
+    non_mt5_params = {'params': [v for k, v in params if not k.startswith('mt5.')]}
+    mt5_params = {'params': [v for k, v in params if k.startswith('mt5.')], 'lr': MT5_LR}
+    optimizer = torch.optim.Adam([non_mt5_params, mt5_params], lr=LR)
 
     epoch = 0
     top_valid_score = None
-    print(f'Starting training, upto {MAX_EPOCH} epochs, patience {PATIENCE} LR={LR} MBART_LR={MBART_LR}', flush=True)
+    print(f'Starting training, upto {MAX_EPOCH} epochs, patience {PATIENCE} LR={LR} MT5_LR={MT5_LR}', flush=True)
     for epoch in range(MAX_EPOCH):
 
         loss = train_iteration(model, optimizer, dataset, train_pairs, qrels_train)
@@ -150,12 +150,12 @@ def write_run(rerank_run, runf):
 
 def main_cli():
     parser = argparse.ArgumentParser('CEDR model training and validation')
-    parser.add_argument('--model', choices=MODEL_MAP.keys(), default='vanilla_mbart')
+    parser.add_argument('--model', choices=MODEL_MAP.keys(), default='vanilla_mt5')
     parser.add_argument('--datafiles', type=argparse.FileType('rt'), nargs='+')
     parser.add_argument('--qrels', type=argparse.FileType('rt'))
     parser.add_argument('--train_pairs', type=argparse.FileType('rt'))
     parser.add_argument('--valid_run', type=argparse.FileType('rt'))
-    parser.add_argument('--initial_mbart_weights', type=argparse.FileType('rb'))
+    parser.add_argument('--initial_mt5_weights', type=argparse.FileType('rb'))
     parser.add_argument('--model_out_dir')
     args = parser.parse_args()
     model = MODEL_MAP[args.model]().cuda()
@@ -164,8 +164,8 @@ def main_cli():
     train_pairs = data.read_pairs_dict(args.train_pairs)
     valid_run = data.read_run_dict(args.valid_run)
 
-    if args.initial_mbart_weights is not None:
-        model.load(args.initial_mbart_weights.name)
+    if args.initial_mt5_weights is not None:
+        model.load(args.initial_mt5_weights.name)
     os.makedirs(args.model_out_dir, exist_ok=True)
     # we use the same qrels object for both training and validation sets
     main(model, dataset, train_pairs, qrels, valid_run, qrels, args.model_out_dir)

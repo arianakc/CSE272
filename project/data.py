@@ -164,7 +164,7 @@ def _iter_valid_records(model, dataset, run):
 
 def _pack_n_ship(batch):
     QLEN = 20
-    MAX_DLEN = 800
+    MAX_DLEN = 512
     DLEN = min(MAX_DLEN, max(len(b) for b in batch['doc_tok']))
     return {
         'query_id': batch['query_id'],
@@ -177,7 +177,7 @@ def _pack_n_ship(batch):
 
 def _pack_n_ship_with_labels(batch):
     QLEN = 20
-    MAX_DLEN = 800
+    MAX_DLEN = 512
     DLEN = min(MAX_DLEN, max(len(b) for b in batch['doc_tok']))
     return {
         'query_id': batch['query_id'],
@@ -198,7 +198,7 @@ def _pad_crop(items, l):
         if len(item) > l:
             item = item[:l]
         result.append(item)
-    return torch.tensor(result).long()
+    return torch.tensor(result).long().cuda()
 
 
 def _mask(items, l):
@@ -211,4 +211,4 @@ def _mask(items, l):
         if len(item) >= l:
             mask = [1. for _ in item[:l]]
         result.append(mask)
-    return torch.tensor(result).float()
+    return torch.tensor(result).float().cuda()
