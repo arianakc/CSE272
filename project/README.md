@@ -7,7 +7,7 @@ pip3 install -r requirements.txt
 ```
 
 #### Data preparation
-Download and unzip data from http://www.cs.jhu.edu/~shuosun/clirmatrix/ to data director and run:
+Download and unzip data from http://www.cs.jhu.edu/~shuosun/clirmatrix/ to data directory and run:
 
 ```bash
 python3 preprocess.py
