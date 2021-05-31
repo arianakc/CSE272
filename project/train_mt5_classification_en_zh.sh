@@ -7,4 +7,4 @@ python3 train_mt5_classification.py \
   --qrels data/en.zh.qrels \
   --train_pairs data/en.zh.train.pairs \
   --valid_run data/en.zh.dev.run \
-  --model_out_dir models/v_mt5_zh
+  --model_out_dir models/mt5_c_zh

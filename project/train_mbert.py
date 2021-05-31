@@ -14,13 +14,13 @@ from collections import defaultdict
 SEED = 42
 LR = 0.001
 BERT_LR = 2e-5
-MAX_EPOCH = 20
+MAX_EPOCH = 100
 BATCH_SIZE = 16
 BATCHES_PER_EPOCH = 64
 GRAD_ACC_SIZE = 2
 #other possibilities: ndcg
 VALIDATION_METRIC = 'ndcg_cut_10'
-PATIENCE = 5 # how many epochs to wait for validation improvement
+PATIENCE = 10 # how many epochs to wait for validation improvement
 
 torch.manual_seed(SEED)
 torch.cuda.manual_seed_all(SEED)

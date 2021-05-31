@@ -7,4 +7,4 @@ python3 train_cli.py \
   --qrels data/en.ar.qrels \
   --train_pairs data/en.ar.train.pairs \
   --valid_run data/en.ar.dev.run \
-  --model_out_dir models/vbert_cli_ar
+  --model_out_dir models/mbert_ar

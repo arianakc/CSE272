@@ -13,7 +13,7 @@ from collections import defaultdict
 
 SEED = 42
 LR = 0.001
-MT5_LR = 0.001
+MT5_LR = 1e-3
 MAX_EPOCH = 100
 BATCH_SIZE = 32
 BATCHES_PER_EPOCH = 64

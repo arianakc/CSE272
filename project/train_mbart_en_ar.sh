@@ -7,4 +7,4 @@ python3 train_mbart.py \
   --qrels data/en.ar.qrels \
   --train_pairs data/en.ar.train.pairs \
   --valid_run data/en.ar.dev.run \
-  --model_out_dir models/v_mbart_ar
+  --model_out_dir models/mbart_ar

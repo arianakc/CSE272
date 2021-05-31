@@ -208,9 +208,9 @@ class MT5ClassificationRanker(torch.nn.Module):
 
     def __init__(self):
         super().__init__()
-        self.config = transformers.MT5Config.from_pretrained("google/mt5-large")
-        self.mt5 = transformers.MT5Model.from_pretrained("google/mt5-large")
-        self.tokenizer = transformers.T5Tokenizer.from_pretrained("google/mt5-large")
+        self.config = transformers.MT5Config.from_pretrained("google/mt5-base")
+        self.mt5 = transformers.MT5Model.from_pretrained("google/mt5-base")
+        self.tokenizer = transformers.T5Tokenizer.from_pretrained("google/mt5-base")
         self.classification_head = MT5ClassificationHead(self.config.d_model, self.config.d_model, 1, 0.1)
         self.vocab = self.tokenizer.get_vocab()
 
